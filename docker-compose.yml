@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  retracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: retracker
+    ports:
+      - "${HOST_PORT:-8080}:80"
+    restart: unless-stopped
+    environment:
+      - LISTEN_ADDR=${LISTEN_ADDR:-:80}
+      - PEER_AGE=${PEER_AGE:-180}
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - X_REAL_IP=${X_REAL_IP:-false}
+      - FORWARD_TIMEOUT=${FORWARD_TIMEOUT:-2}
+      - ENABLE_PROMETHEUS=${ENABLE_PROMETHEUS:-false}
+      - ANNOUNCE_INTERVAL=${ANNOUNCE_INTERVAL:-30}
+      - FORWARDS_FILE=${FORWARDS_FILE:-}
+    # Uncomment below to use forwarders config file
+
+    # Uncomment below to enable debug mode
+    # command: ["./retracker", "-l", ":80", "-d"]
+    
+    # Uncomment below to enable Prometheus metrics
+    # command: ["./retracker", "-l", ":80", "-p"]
+    
+    # Uncomment below to use X-Real-IP header (if behind reverse proxy)
+    # command: ["./retracker", "-l", ":80", "-x"]
+    
+    # Uncomment and configure for forwarding to external trackers
+    # volumes:
+    #   - ./forwarders.yml:/app/forwarders.yml:ro
+    # command: ["./retracker", "-l", ":80", "-f", "/app/forwarders.yml"]
+
+    command: >
+      sh -c "
+      ./retracker
+      -l $${LISTEN_ADDR}
+      -a $${PEER_AGE}
+      $$([ \"$${DEBUG_MODE}\" = \"true\" ] && echo \"-d\" || echo \"\")
+      $$([ \"$${X_REAL_IP}\" = \"true\" ] && echo \"-x\" || echo \"\")
+      -t $${FORWARD_TIMEOUT}
+      $$([ \"$${ENABLE_PROMETHEUS}\" = \"true\" ] && echo \"-p\" || echo \"\")
+      -i $${ANNOUNCE_INTERVAL}
+      $$([ -n \"$${FORWARDS_FILE}\" ] && echo \"-f $${FORWARDS_FILE}\" || echo \"\")
+      "
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/favicon.ico"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

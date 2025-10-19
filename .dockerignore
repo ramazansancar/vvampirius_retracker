@@ -1,0 +1,47 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+*.md
+diagram.jpg
+
+# License
+LICENSE
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+retracker
+
+# Test files
+*_test.go
+**/testdata/
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# Go workspace file (if not needed in container)
+go.work.sum
