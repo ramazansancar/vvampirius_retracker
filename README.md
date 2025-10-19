@@ -11,9 +11,10 @@ Simple HTTP torrent tracker.
 
 ## Installing
 
-```
+```bash
 go install 'github.com/vvampirius/retracker@latest'
 ```
+
 > Executables are installed in the directory named by the GOBIN environment variable, which defaults to $GOPATH/bin or $HOME/go/bin if the GOPATH environment variable is not set. Executables in $GOROOT are installed in $GOROOT/bin or $GOTOOLDIR instead of $GOBIN.
 
 ## Usage
@@ -107,7 +108,7 @@ FORWARDS_FILE=/app/forwarders.yml
 
 Uncomment the volumes section in `docker-compose.yml`:
 
-```yaml
+```yml
 volumes:
   - ./forwarders.yml:/app/forwarders.yml:ro
 ```
@@ -121,14 +122,18 @@ docker-compose up -d --build
 ### Standalone
 
 Start tracker on port 8080 with debug mode.
-```
+
+```bash
 retracker -l :8080 -d
 ```
+
 Add http://\<your ip>:8080/announce to your torrent.
 
 ## Behind NGINX
+
 Configure nginx like:
-```
+
+```yml
 # cat /etc/nginx/sites-enabled/retracker.local
 server {
         listen 80;
@@ -152,22 +157,26 @@ server {
 ```
 
 Start tracker on port 8080 with getting remote address from X-Real-IP header.
-```
+
+```bash
 retracker -l :8080 -x -p
 ```
 
 Add retracker.local to your local DNS or /etc/hosts.
 
-Add http://retracker.local/announce to your torrent.
+Add <http://retracker.local/announce> to your torrent.
 
 ### Standalone with announce forwarding
 
 You can forward announce request to some external HTTP trackers and append peers from them to response to your torrent client.
-```
+
+```bash
 retracker -l :8080 -d -f forwarders.yml
 ```
+
 forwarders.yml:
-```
+
+```yml
 - uri: http://1.2.3.4:8080/announce
 - uri: http://5.6.7.8:8080/announce
 - uri: http://5.6.7.8:8080/announce
@@ -175,6 +184,7 @@ forwarders.yml:
 - uri: http://192.168.1.1:8080/announce
   host: retracker.local # external retracker.local (like on picture above)
 ```
+
 Add http://\<your ip>:8080/announce to your torrent.
 
 ## License
